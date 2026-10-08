@@ -23,11 +23,32 @@ interface AnalysisResult {
   timestamp: string
 }
 
+const COMMON_RECOMMENDATIONS: CropRecommendation[] = [
+  { name: 'Rice', suitability: 92, waterNeeds: 'High (1200-1500mm)', fertilizerType: 'Nitrogen + Phosphate', riskFactors: ['Drainage required', 'Monitor for fungal diseases'], growthDays: 120 },
+  { name: 'Wheat', suitability: 88, waterNeeds: 'Medium (400-500mm)', fertilizerType: 'Balanced NPK', riskFactors: ['Moderate salt tolerance needed'], growthDays: 150 },
+  { name: 'Maize', suitability: 85, waterNeeds: 'Medium-High (500-700mm)', fertilizerType: 'Nitrogen-rich', riskFactors: ['Requires good drainage', 'Susceptible to borers'], growthDays: 120 },
+  { name: 'Legumes (Chickpea)', suitability: 82, waterNeeds: 'Low-Medium (350-450mm)', fertilizerType: 'Phosphate + Potassium', riskFactors: ['Prefers well-drained soil'], growthDays: 110 },
+]
+
+const SOIL_DATA: Omit<AnalysisResult, 'timestamp'>[] = [
+  { soilType: 'Loamy Clay', pH: 6.8, textureClass: 'Silty Loam', organicMatter: '4.2% (Good)', moisture: 'Moderate (15-18%)', recommendations: COMMON_RECOMMENDATIONS },
+  { soilType: 'Sandy Loam', pH: 6.2, textureClass: 'Coarse Loam', organicMatter: '2.1% (Fair)', moisture: 'Low (8-11%)', recommendations: COMMON_RECOMMENDATIONS },
+  { soilType: 'Black Cotton Soil', pH: 7.4, textureClass: 'Heavy Clay', organicMatter: '3.8% (Good)', moisture: 'High (22-26%)', recommendations: COMMON_RECOMMENDATIONS },
+  { soilType: 'Red Laterite', pH: 5.6, textureClass: 'Sandy Clay Loam', organicMatter: '1.8% (Fair)', moisture: 'Low (9-12%)', recommendations: COMMON_RECOMMENDATIONS },
+  { soilType: 'Alluvial Soil', pH: 7.0, textureClass: 'Fine Loam', organicMatter: '3.4% (Good)', moisture: 'Moderate (16-20%)', recommendations: COMMON_RECOMMENDATIONS },
+  { soilType: 'Silty Soil', pH: 6.6, textureClass: 'Fine Silt', organicMatter: '4.8% (Excellent)', moisture: 'High (20-24%)', recommendations: COMMON_RECOMMENDATIONS },
+  { soilType: 'Peaty Soil', pH: 5.2, textureClass: 'Organic Loam', organicMatter: '8.6% (Excellent)', moisture: 'Very High (28-34%)', recommendations: COMMON_RECOMMENDATIONS },
+  { soilType: 'Chalky Soil', pH: 8.1, textureClass: 'Calcareous Loam', organicMatter: '1.5% (Low)', moisture: 'Moderate (13-16%)', recommendations: COMMON_RECOMMENDATIONS },
+  { soilType: 'Sandy Soil', pH: 6.0, textureClass: 'Very Coarse Sand', organicMatter: '1.2% (Low)', moisture: 'Very Low (5-8%)', recommendations: COMMON_RECOMMENDATIONS },
+  { soilType: 'Mountain Forest Soil', pH: 6.4, textureClass: 'Humus-rich Loam', organicMatter: '6.1% (Excellent)', moisture: 'Moderate (17-21%)', recommendations: COMMON_RECOMMENDATIONS },
+]
+
 export default function SoilDashboard() {
   const [image, setImage] = useState<string | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [analysisNumber, setAnalysisNumber] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,50 +83,13 @@ export default function SoilDashboard() {
       clearInterval(interval)
       setUploadProgress(100)
 
-      const mockAnalysis: AnalysisResult = {
-        soilType: 'Loamy Clay',
-        pH: 6.8,
-        textureClass: 'Silty Loam',
-        organicMatter: '4.2% (Good)',
-        moisture: 'Moderate (15-18%)',
+      const soilData = SOIL_DATA[analysisNumber % SOIL_DATA.length]
+      setAnalysis({
+        ...soilData,
+        recommendations: soilData.recommendations.map((crop) => ({ ...crop })),
         timestamp: new Date().toLocaleString(),
-        recommendations: [
-          {
-            name: 'Rice',
-            suitability: 92,
-            waterNeeds: 'High (1200-1500mm)',
-            fertilizerType: 'Nitrogen + Phosphate',
-            riskFactors: ['Drainage required', 'Monitor for fungal diseases'],
-            growthDays: 120,
-          },
-          {
-            name: 'Wheat',
-            suitability: 88,
-            waterNeeds: 'Medium (400-500mm)',
-            fertilizerType: 'Balanced NPK',
-            riskFactors: ['Moderate salt tolerance needed'],
-            growthDays: 150,
-          },
-          {
-            name: 'Maize',
-            suitability: 85,
-            waterNeeds: 'Medium-High (500-700mm)',
-            fertilizerType: 'Nitrogen-rich',
-            riskFactors: ['Requires good drainage', 'Susceptible to borers'],
-            growthDays: 120,
-          },
-          {
-            name: 'Legumes (Chickpea)',
-            suitability: 82,
-            waterNeeds: 'Low-Medium (350-450mm)',
-            fertilizerType: 'Phosphate + Potassium',
-            riskFactors: ['Prefers well-drained soil'],
-            growthDays: 110,
-          },
-        ],
-      }
-
-      setAnalysis(mockAnalysis)
+      })
+      setAnalysisNumber((current) => current + 1)
       setAnalyzing(false)
     }, 3000)
   }
