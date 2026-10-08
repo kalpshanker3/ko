@@ -280,11 +280,8 @@ export default function SoilDashboard() {
                 </li>
               </ol>
 
-              <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-                <p className="text-xs text-slate-500 dark:text-slate-500 mb-3">
-                  <strong>Powered by:</strong>
-                </p>
-                <div className="flex flex-wrap gap-2">
+  <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+  <div className="flex flex-wrap gap-2">
                   <span className="inline-block px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs rounded font-medium">
                     TensorFlow
                   </span>
